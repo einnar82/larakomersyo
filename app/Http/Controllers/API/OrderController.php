@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\OrderRequest;
 use App\Http\Resources\API\OrderResource;
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -22,9 +24,24 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): OrderResource
+    public function store(OrderRequest $request): OrderResource
     {
-        return new OrderResource(Order::query()->create($request->all()));
+        /** @var Order $order */
+        $order = Order::query()->create(array_merge($request->except('product_ids'), [
+            'user_id' => \auth()->id()
+        ]));
+
+
+        $orderItems = [];
+        foreach ($request->product_ids as $productId) {
+            $orderItems[] = [
+                'order_id' => $order->id,
+                'product_id' => $productId
+            ];
+        }
+
+        $order->order_items()->createMany($orderItems);
+        return new OrderResource($order->load('order_items'));
     }
 
     /**
@@ -38,9 +55,9 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order $order): OrderResource
+    public function update(OrderRequest $request, Order $order): OrderResource
     {
-        return new OrderResource(\tap($order)->update($request->all()));
+        return new OrderResource(\tap($order)->update($request->except('product_ids')));
     }
 
     /**
