@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\UploadsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -59,6 +60,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::middleware('auth:api')->group(function () {
     Route::post('/upload', UploadsController::class);
     Route::apiResources([
+        'orders' => OrderController::class,
         'products' => ProductController::class,
     ]);
     Route::apiResource('/cart-items', CartController::class)
