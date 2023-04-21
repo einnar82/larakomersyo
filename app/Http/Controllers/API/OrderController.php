@@ -32,15 +32,7 @@ class OrderController extends Controller
         ]));
 
 
-        $orderItems = [];
-        foreach ($request->product_ids as $productId) {
-            $orderItems[] = [
-                'order_id' => $order->id,
-                'product_id' => $productId
-            ];
-        }
-
-        $order->order_items()->createMany($orderItems);
+        $this->buildOrderItems($request, $order);
         return new OrderResource($order->load('order_items'));
     }
 
@@ -57,7 +49,13 @@ class OrderController extends Controller
      */
     public function update(OrderRequest $request, Order $order): OrderResource
     {
-        return new OrderResource(\tap($order)->update($request->except('product_ids')));
+        /** @var Order $order */
+        $order = \tap($order)->update($request->except('product_ids'));
+
+        $order->order_items()->delete();
+        $this->buildOrderItems($request, $order);
+
+        return new OrderResource($order->load('order_items'));
     }
 
     /**
@@ -68,5 +66,18 @@ class OrderController extends Controller
         $order->delete();
 
         return \response()->noContent();
+    }
+
+    private function buildOrderItems(OrderRequest $request, Order $order): void
+    {
+        $orderItems = [];
+        foreach ($request->product_ids as $productId) {
+            $orderItems[] = [
+                'order_id' => $order->id,
+                'product_id' => $productId
+            ];
+        }
+
+        $order->order_items()->createMany($orderItems);
     }
 }

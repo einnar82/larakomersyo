@@ -50,15 +50,16 @@ class CartController extends Controller
 
     private function buildCartItems(CartRequest $request): AnonymousResourceCollection
     {
+        $data = [];
         foreach ($request->product_ids as $productId) {
-            Cart::query()->create([
+            $data[] = [
                 'product_id' => $productId,
-                'user_id' => $request->user_id
-            ]);
+                'user_id' => \auth()->id()
+            ];
         }
-        $user = $this->user();
+        $user = $this->user()->cart_items()->createMany($data);
 
-        return CartResource::collection($user->cart_items);
+        return CartResource::collection($user->load('cart_items'));
     }
 
     private function user(): User
