@@ -56,14 +56,14 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('logout');
 
-
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/upload', UploadsController::class);
     Route::apiResources([
         'orders' => OrderController::class,
-        'products' => ProductController::class,
+        'cart' => CartController::class
     ]);
-    Route::apiResource('/cart-items', CartController::class)
-        ->only(['store', 'update', 'index']);
-    Route::delete('/cart-items', [CartController::class, 'destroy']);
+    Route::apiResource('/products', ProductController::class)
+        ->except(['index', 'show']);
 });

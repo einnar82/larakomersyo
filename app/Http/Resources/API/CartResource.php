@@ -15,7 +15,7 @@ class CartResource extends JsonResource
     public function toArray(Request $request): array
     {
         return array_merge(parent::toArray($request), [
-            'product' => new ProductResource($this->product),
+            'product' => new ProductResource($this->whenLoaded('product')),
         ]);
     }
 }

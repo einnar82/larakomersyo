@@ -17,7 +17,7 @@ class ProductController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::query()->simplePaginate());
+        return ProductResource::collection(Product::query()->simplePaginate(100));
     }
 
     /**

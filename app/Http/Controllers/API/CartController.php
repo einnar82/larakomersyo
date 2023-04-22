@@ -41,9 +41,9 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(): Response
+    public function destroy(Cart $cart): Response
     {
-        $this->deleteUserCart();
+        $cart->delete();
 
         return \response()->noContent();
     }
@@ -51,15 +51,16 @@ class CartController extends Controller
     private function buildCartItems(CartRequest $request): AnonymousResourceCollection
     {
         $data = [];
-        foreach ($request->product_ids as $productId) {
+        foreach ($request->items as $item) {
             $data[] = [
-                'product_id' => $productId,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
                 'user_id' => \auth()->id()
             ];
         }
-        $user = $this->user()->cart_items()->createMany($data);
+        $this->user()->cart_items()->createMany($data);
 
-        return CartResource::collection($user->load('cart_items'));
+        return CartResource::collection(Cart::query()->where('user_id', auth()->id())->get());
     }
 
     private function user(): User

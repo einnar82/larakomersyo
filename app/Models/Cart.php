@@ -10,6 +10,8 @@ class Cart extends Model
 {
     use HasFactory;
 
+    protected $with = ['product'];
+
     protected $guarded = ['id'];
 
     public function user(): BelongsTo
