@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Passport\RefreshTokenRepository;
@@ -36,7 +37,13 @@ class AuthenticatedSessionController extends Controller
             'scope' => $request->scope ?? '*',
         ]);
 
-        return app()->handle($httpRequest);
+        $response = app()->handle($httpRequest);
+        if ($response->isSuccessful() && $this->verified($request)) {
+            return $response;
+        }
+        return \response()->json([
+           'message' => 'Please verify your email address.'
+        ],400);
     }
 
     /**
@@ -55,5 +62,17 @@ class AuthenticatedSessionController extends Controller
         $this->refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
 
         return response()->json(['message' => 'ok']);
+    }
+
+    /**
+     * @param LoginRequest $request
+     * @return bool
+     */
+    private function verified(LoginRequest $request): bool
+    {
+        return User::query()
+            ->where('email', $request->email)
+            ->whereNotNull('email_verified_at')
+            ->exists();
     }
 }
