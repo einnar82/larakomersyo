@@ -45,6 +45,7 @@ const logout = async () => {
         type="error"
         title="Unauthorized"
         text="Please login!"
+        v-else
       ></v-alert>
     </v-main>
   </v-app>
