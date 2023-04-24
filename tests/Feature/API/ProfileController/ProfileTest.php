@@ -13,19 +13,25 @@ class ProfileTest extends TestCase
     use WithFaker, DatabaseMigrations, RefreshDatabase;
 
     protected const RESPONSE_STRUCTURE = [
-        'data' => [
-            '*' => [
-                'product_id',
-                'user_id',
-                'quantity',
-                'product',
-                'created_at',
-                'updated_at'
-            ]
-        ]
+        'id',
+        'name',
+        'email',
+        'created_at',
+        'updated_at'
     ];
 
-    protected const API_URI = '/api/cart';
+    protected const API_URI = '/api/me';
+
+    public function testGetUserProfileSucceed(): void
+    {
+        $this->passportActingAsUser();
+
+        $response = $this->getJson(self::API_URI);
+
+        $response
+            ->assertOk()
+            ->assertJsonStructure(self::RESPONSE_STRUCTURE);
+    }
 
     protected function setUp(): void
     {
