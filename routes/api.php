@@ -5,6 +5,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\StripeController;
 use App\Http\Controllers\API\UploadsController;
+use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -28,6 +29,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:api'])->get('/me', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/admin/login', [AdminLoginController::class, 'store'])
+    ->middleware('guest')
+    ->name('admin.login');
+
+Route::post('/admin/logout', [AdminLoginController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('admin.logout');
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest')
