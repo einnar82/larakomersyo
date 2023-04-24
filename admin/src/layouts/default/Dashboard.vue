@@ -1,8 +1,20 @@
 <script setup>
 
 import {ref} from "vue";
+import {useAuthStore} from "@/store/auth";
+import {storeToRefs} from "pinia";
+import {useRouter} from "vue-router";
 
 const drawer = ref(false);
+const auth = useAuthStore();
+const router = useRouter();
+const {isAuthenticated} = storeToRefs(auth)
+
+const logout = async () => {
+  await auth.logout();
+  await router.push('/login');
+  localStorage.clear();
+}
 
 </script>
 <template>
@@ -18,10 +30,22 @@ const drawer = ref(false);
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>Administrator</v-toolbar-title>
+      <v-spacer></v-spacer>
+
+      <v-btn prepend-icon="mdi-logout"
+             @click="logout"
+             v-show="isAuthenticated">
+        Logout
+      </v-btn>
     </v-app-bar>
 
     <v-main>
-      <router-view/>
+      <router-view v-if="isAuthenticated"/>
+      <v-alert
+        type="error"
+        title="Unauthorized"
+        text="Please login!"
+      ></v-alert>
     </v-main>
   </v-app>
 </template>

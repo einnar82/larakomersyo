@@ -3,15 +3,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
         path: '',
-        name: 'home',
+        name: 'login',
         component: () => import(/* webpackChunkName: "home" */ '@/views/LoginView.vue'),
       },
     ],
+  },
+  {
+    path: '/',
+    redirect: '/login'
   },
   {
     path: '/administrator',
