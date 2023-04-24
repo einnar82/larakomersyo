@@ -77,6 +77,10 @@ const closeDelete = () => {
   dialogDelete.value = false
 }
 
+const goToCreateProduct = () => {
+  router.push('/administrator/products/create')
+}
+
 const save = () => {
   if (editedIndex.value > -1) {
     Object.assign(getProducts.value[editedIndex.value], editedItem.value)
@@ -121,8 +125,8 @@ onMounted(() => {
               ></v-divider>
               <v-spacer></v-spacer>
               <v-dialog
-                v-model="dialog"
                 max-width="500px"
+                disabled
               >
                 <template v-slot:activator="{ props }">
                   <v-btn
@@ -130,6 +134,7 @@ onMounted(() => {
                     dark
                     class="mb-2"
                     v-bind="props"
+                    @click="goToCreateProduct"
                   >
                     New Item
                   </v-btn>

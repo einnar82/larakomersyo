@@ -9,7 +9,7 @@ const drawer = ref(false);
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer">
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-view-dashboard" title="Products" value="home" to="products">
+        <v-list-item prepend-icon="mdi-view-dashboard" title="Products" value="home" to="/administrator/products">
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

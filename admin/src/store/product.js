@@ -57,6 +57,23 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  const createProduct = async (data = {}) => {
+    try {
+      const auth = useAuthStore();
+      const token = auth.getToken;
+      const response = await httpClient({
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }).post('/products', data)
+      product.value = response.data.data;
+
+      return response;
+    } catch (err) {
+      return err.response;
+    }
+  }
+
   const deleteProduct = async (id) => {
     try {
       const auth = useAuthStore();
@@ -78,6 +95,7 @@ export const useProductStore = defineStore('product', () => {
     fetchSelectedProduct,
     deleteProduct,
     updateSelectedProduct,
+    createProduct,
     getProducts,
     getProduct
   }

@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import { useField, useForm } from 'vee-validate'
 import {useRoute, useRouter} from "vue-router";
 import {useProductStore} from "@/store/product";
@@ -12,11 +12,9 @@ const product = useProductStore();
 const router = useRouter();
 const route = useRoute();
 const upload = useUploadStore();
-const { getProduct } = storeToRefs(product)
 const { getImageUrl } = storeToRefs(upload);
 
-const { handleSubmit, setFieldValue } = useForm({
-  initialValues: getProduct,
+const { resetForm, setFieldValue } = useForm({
   validationSchema: {
     name (value) {
       if (value?.length >= 2) return true
@@ -50,22 +48,24 @@ const back = () => {
   router.push('/administrator/products')
 }
 
-const updateSelectedProduct = async () => {
-    const url = new URL(image_url.value.value)
-    const formattedPrice = Number(price.value.value)
-    const response = await product.updateSelectedProduct(route.params.id, {
-      name: name.value.value,
-      price: parseFloat(formattedPrice).toFixed(2),
-      description: description.value.value,
-      image_url: url.pathname.replace('/', '')
-    })
+const createProduct = async () => {
+  const url = new URL(image_url.value.value)
+  const formattedPrice = Number(price.value.value)
+  const response = await product.createProduct({
+    name: name.value.value,
+    price: parseFloat(formattedPrice).toFixed(2),
+    description: description.value.value,
+    image_url: url.pathname.replace('/', '')
+  })
 
-  if (response.status === 200) {
-      isSuccessful.value = true
-      isFailed.value = false
+  let HTTP_CREATED = 201;
+  if (response.status === HTTP_CREATED) {
+    isSuccessful.value = true
+    isFailed.value = false
+    await resetForm();
   } else {
-      isFailed.value = true
-      isSuccessful.value = false
+    isFailed.value = true
+    isSuccessful.value = false
   }
 }
 
@@ -75,11 +75,6 @@ const getModelValue = async (file) => {
   await upload.uploadImage(formData)
   setFieldValue('image_url', `${getImageUrl.value}`)
 }
-
-
-onMounted(() => {
-  product.fetchSelectedProduct(route.params.id);
-})
 
 </script>
 
@@ -91,20 +86,20 @@ onMounted(() => {
           type="success"
           title="Success"
           class="mb-16"
-          text="Product information updated"
+          text="Product information created"
           v-show="isSuccessful"
         ></v-alert>
         <v-alert
           type="error"
           title="Failed"
           class="mb-16"
-          text="Product information updating failed."
+          text="Product information creation failed."
           v-show="isFailed"
         ></v-alert>
-        <form @submit.prevent="updateSelectedProduct">
+        <form @submit.prevent="createProduct">
           <v-img :src="image_url.value.value"
-                  height="200"
-                  class="mb-4">
+                 height="200"
+                 class="mb-4">
 
           </v-img>
           <v-file-input

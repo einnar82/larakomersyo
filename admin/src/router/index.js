@@ -19,12 +19,17 @@ const routes = [
     children: [
       {
         path: 'products',
-        name: 'product-list',
+        name: 'list-products',
         component: () => import(/* webpackChunkName: "home" */ '@/views/ProductListView.vue'),
       },
       {
+        path: 'products/create',
+        name: 'create-product',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/CreateProductView.vue'),
+      },
+      {
         path: 'products/:id',
-        name: 'product-item',
+        name: 'get-product',
         component: () => import(/* webpackChunkName: "home" */ '@/views/ProductDetailView.vue'),
       }
     ],
