@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\API\CartResource;
 use App\Models\Cart;
+use App\Models\Order;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
@@ -14,72 +17,68 @@ class StripeController extends Controller
     /**
      * @throws ApiErrorException
      */
-    public function checkout(Request $request): Redirector|Application|RedirectResponse
+    public function checkout(Request $request): string
     {
-//        /** @var \App\Models\User $user */
-//        $user = $request->user();
-//
-//        [$products, $cartItems] = Cart::getProductsAndCartItems();
-//
-//        $orderItems = [];
-//        $lineItems = [];
-//        $totalPrice = 0;
-//        foreach ($products as $product) {
-//            $quantity = $cartItems[$product->id]['quantity'];
-//            $totalPrice += $product->price * $quantity;
-//            $lineItems[] = [
-//                'price_data' => [
-//                    'currency' => 'usd',
-//                    'product_data' => [
-//                        'name' => $product->title,
-//                    ],
-//                    'unit_amount' => $product->price * 100,
-//                ],
-//                'quantity' => $quantity,
-//            ];
-//            $orderItems[] = [
-//                'product_id' => $product->id,
-//                'quantity' => $quantity,
-//                'unit_price' => $product->price
-//            ];
-//        }
-//
-//        $session = Cashier::stripe()->checkout->sessions->create([
-//            'line_items' => $lineItems,
-//            'mode' => 'payment',
-//            'success_url' => route('checkout.success', [], true) . '?session_id={CHECKOUT_SESSION_ID}',
-//            'cancel_url' => route('checkout.failure', [], true),
-//        ]);
-//
-//        // Create Order
-//        $orderData = [
-//            'total_price' => $totalPrice,
-//            'status' => OrderStatus::Unpaid,
-//            'created_by' => $user->id,
-//            'updated_by' => $user->id,
-//        ];
-//        $order = Order::create($orderData);
-//
-//        // Create Order Items
-//        foreach ($orderItems as $orderItem) {
-//            $orderItem['order_id'] = $order->id;
-//            OrderItem::create($orderItem);
-//        }
-//
-//        // Create Payment
-//        $paymentData = [
-//            'order_id' => $order->id,
-//            'amount' => $totalPrice,
-//            'status' => PaymentStatus::Pending,
-//            'type' => 'cc',
-//            'created_by' => $user->id,
-//            'updated_by' => $user->id,
-//            'session_id' => $session->id
-//        ];
-//        Payment::create($paymentData);
-//
-//        CartItem::where(['user_id' => $user->id])->delete();
-//
-//        return redirect($session->url);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $cartItems = CartResource::collection($user->cart_items)->toArray($request);
+
+        $orderItems = [];
+        $lineItems = [];
+        $totalPrice = 0;
+        foreach ($cartItems as $cartItem) {
+            $quantity = $cartItem['quantity'];
+            $totalPrice += $cartItem['product']['price'] * $quantity;
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => $cartItem['product']['name']
+                    ],
+                    'unit_amount' => $cartItem['product']['price'] * 100,
+                ],
+                'quantity' => $quantity,
+            ];
+
+            $orderItems[] = [
+                'product_id' => $cartItem['product']['id'],
+                'quantity' => $quantity,
+                'unit_price' => $cartItem['product']['price']
+            ];
+
+        }
+
+        $session = Cashier::stripe()->checkout->sessions->create([
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => config('app.frontend_url') . '/payment/success/?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => config('app.frontend_url') . '/payment/failed',
+        ]);
+
+        // Create Order
+        $orderData = [
+            'total_price' => $totalPrice,
+            'status' => 'unpaid',
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+        ];
+        /** @var Order $order */
+        $order = Order::query()->create($orderData);
+        $order->order_items()->createMany($orderItems);
+
+        Payment::query()->create([
+            'order_id' => $order->id,
+            'amount' => $totalPrice,
+            'status' => 'pending',
+            'type' => 'cc',
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'stripe_session_id' => $session->id
+        ]);
+
+        Cart::query()->where(['user_id' => $user->id])->delete();
+
+        return $session->url;
     }
 }

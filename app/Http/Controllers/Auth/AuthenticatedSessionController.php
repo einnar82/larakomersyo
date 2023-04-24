@@ -37,13 +37,13 @@ class AuthenticatedSessionController extends Controller
             'scope' => $request->scope ?? '*',
         ]);
 
-        $response = app()->handle($httpRequest);
-        if ($response->isSuccessful() && $this->verified($request)) {
-            return $response;
+        if  ($this->verified($request) === false) {
+            return \response()->json([
+                'message' => 'Please verify your email address.'
+            ],400);
         }
-        return \response()->json([
-           'message' => 'Please verify your email address.'
-        ],400);
+        return  app()->handle($httpRequest);
+
     }
 
     /**
@@ -70,9 +70,11 @@ class AuthenticatedSessionController extends Controller
      */
     private function verified(LoginRequest $request): bool
     {
-        return User::query()
+        /** @var User $user */
+        $user = User::query()
             ->where('email', $request->email)
-            ->whereNotNull('email_verified_at')
-            ->exists();
+            ->firstOrFail();
+
+        return $user->hasVerifiedEmail();
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\StripeController;
 use App\Http\Controllers\API\UploadsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -59,6 +60,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
+    Route::post('/checkout', [StripeController::class, 'checkout']);
     Route::post('/upload', UploadsController::class);
     Route::apiResources([
         'orders' => OrderController::class,

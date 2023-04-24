@@ -14,13 +14,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
-            $table->string('name_on_card');
-            $table->string('email');
-            $table->string('card_number');
-            $table->string('expiry_date');
-            $table->string('cvc');
-            $table->string('country');
+            $table->foreignIdFor(User::class, 'created_by');
+            $table->foreignIdFor(User::class, 'updated_by');
+            $table->string('status');
+            $table->decimal('total_price');
             $table->timestamps();
         });
     }

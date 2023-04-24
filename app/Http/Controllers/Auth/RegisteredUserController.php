@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         return \response()->json([
-           'message' => 'An email has been sent to the registered email address, Please check.'
+           'message' => "An email has been sent to {$request->email}, Please check."
         ]);
     }
 }
