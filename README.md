@@ -3,6 +3,9 @@
 # einnar82/larakomersyo
 Komersyo - tagalog word for Commerce.
 
+[Demo video](https://www.loom.com/share/9033f3eb247c4a608dd68c1e85005d67)
+Access the client app via https://larakomersyo-client.vercel.app/ and the admin app via https://larakomersyo-admin.vercel.app/login
+
 ### Prerequisites:
 
 - **Docker**
@@ -25,7 +28,7 @@ Komersyo - tagalog word for Commerce.
 
 - **Your API Application** http://localhost
 - **Your Client Application** http://localhost:5173
-- **Your Admin Application** http://localhost:5173
+- **Your Admin Application** http://localhost:3000
 - **Preview Emails via Mailpit** http://localhost:8025
 
 ### Start the development server
