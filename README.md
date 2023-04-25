@@ -14,6 +14,7 @@ Komersyo - tagalog word for Commerce.
 
 - Vue.js - Javascript Framework
 - Vuetify - Vue.js UI Library
+- Pinia - Pinia is a new state management library that helps you manage and store reactive data and state across your components in your Vue. js application.
 - Laravel Breeze - a minimal, simple implementation of all of Laravel's [authentication logic features](https://laravel.com/docs/10.x/authentication), including login, registration, password reset, email verification, and password confirmation. In addition, Breeze includes a simple "profile" page where the user may update their name, email address, and password.
 - Laravel Passport - provides a full OAuth2 server implementation for your Laravel application in a matter of minutes.
 - Laravel Sail - This project uses  [Laravel Sail](https://laravel.com/docs/sail) to manage  its local development stack. For more detailed usage instructions take a look at  
