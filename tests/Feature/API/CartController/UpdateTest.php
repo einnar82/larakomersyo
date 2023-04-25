@@ -29,7 +29,7 @@ class UpdateTest extends AbstractCartControllerTestCase
         ];
         $this->passportActingAsUser();
 
-        $response = $this->putJson(\sprintf(self::API_URI.'/%s', $cart->id), $data);
+        $response = $this->putJson(\sprintf(self::API_URI.'/%s', 'update'), $data);
 
         $response->assertOk()
             ->assertJsonStructure(self::RESPONSE_STRUCTURE);
@@ -40,14 +40,9 @@ class UpdateTest extends AbstractCartControllerTestCase
 
     public function testUpdateIfThrowsValidationException(): void
     {
-        /** @var Cart $cart */
-        $cart = Cart::factory()
-            ->for(User::factory())
-            ->for(Product::factory())
-            ->create();
         $this->passportActingAsUser();
 
-        $response = $this->putJson(\sprintf(self::API_URI.'/%s', $cart->id), []);
+        $response = $this->putJson(\sprintf(self::API_URI.'/%s', 'update'));
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
