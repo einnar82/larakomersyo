@@ -73,8 +73,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/upload', UploadsController::class);
     Route::apiResources([
         'orders' => OrderController::class,
-        'cart' => CartController::class
     ]);
+    Route::put('/cart/update', [CartController::class, 'update']);
+    Route::apiResource('/cart', CartController::class)
+        ->only(['index','store', 'destroy']);
     Route::apiResource('/products', ProductController::class)
         ->except(['index', 'show']);
 });

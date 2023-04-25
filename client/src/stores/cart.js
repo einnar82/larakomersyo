@@ -22,7 +22,24 @@ export const useCartStore = defineStore('cart', {
                     items: items
                 })
 
-                this.cartItems = response.data.data;
+                this.cartItems = response.data.data.filter(cart => cart.quantity !== 0);
+            } catch (err) {
+                this.cartItems = []
+            }
+        },
+        async updateCart(items) {
+            try {
+                const auth = useAuthStore();
+                const token = auth.getToken;
+                const response = await httpClient({
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).put('/cart/update', {
+                    items: items
+                })
+
+                this.cartItems = response.data.data.filter(cart => cart.quantity !== 0);
             } catch (err) {
                 this.cartItems = []
             }
@@ -37,7 +54,7 @@ export const useCartStore = defineStore('cart', {
                     }
                 }).get('/cart')
 
-                this.cartItems = response.data.data;
+                this.cartItems = response.data.data.filter(cart => cart.quantity !== 0);
             } catch (err) {
                 this.cartItems = []
             }

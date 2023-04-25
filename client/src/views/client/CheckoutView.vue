@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, toRaw} from "vue";
 import {useCartStore} from "../../stores/cart";
 import {storeToRefs} from "pinia";
 import {useCheckoutStore} from "../../stores/checkout";
@@ -24,8 +24,16 @@ const getTotalAmount = () => getCartItems.value
     .toFixed(2)
 
 const listenModel = async (value, id) => {
+    const cartItems = toRaw(getCartItems.value);
+    const mappedCartItems = cartItems.map(cart => ({
+        product_id: cart.product_id,
+        quantity: Number(cart.quantity)
+    }))
+    console.log(mappedCartItems)
     if (value === 0) {
         await cart.deleteCartItem(id)
+    } else {
+        await cart.updateCart(mappedCartItems)
     }
 }
 
@@ -90,7 +98,8 @@ onMounted(() => {
                                     ></v-text-field>
                                 </td>
                                 <td>${{totalProductPrice(cartItem.quantity, cartItem.product.price)}}</td>
-                                <td @click="deleteCartItem(cartItem.id)"><a>X</a></td>
+                                <td @click="deleteCartItem(cartItem.id)"
+                                    style="cursor:pointer;"><a>X</a></td>
                             </tr>
                             </tbody>
                         </template>

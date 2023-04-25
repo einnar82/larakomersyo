@@ -38,9 +38,8 @@ const props = defineProps({
         </v-img>
 
         <v-card-text>
-            <div>$ {{price}}</div>
-
-            <div>{{name}}</div>
+            <div class="text-h5">{{name}}</div>
+            <div class="text-h6">$ {{price}}</div>
         </v-card-text>
 
         <v-card-actions>

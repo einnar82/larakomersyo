@@ -51,7 +51,8 @@ onMounted(() => {
 <template>
     <v-app id="inspire">
         <v-app-bar app>
-            <v-toolbar-title @click="gotToHomepage">Larakomersyo</v-toolbar-title>
+            <v-toolbar-title @click="gotToHomepage"
+                    style="cursor: pointer">Larakomersyo</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn prepend-icon="mdi-cart"
                    @click="goToCheckout"
