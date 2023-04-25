@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, toRaw} from 'vue'
 import { useField, useForm } from 'vee-validate'
 import {useRoute, useRouter} from "vue-router";
 import {useProductStore} from "@/store/product";
@@ -13,6 +13,7 @@ const router = useRouter();
 const route = useRoute();
 const upload = useUploadStore();
 const { getImageUrl } = storeToRefs(upload);
+const uploader = ref(null)
 
 const { resetForm, setFieldValue } = useForm({
   validationSchema: {
@@ -51,6 +52,7 @@ const back = () => {
 const createProduct = async () => {
   const url = new URL(image_url.value.value)
   const formattedPrice = Number(price.value.value)
+
   const response = await product.createProduct({
     name: name.value.value,
     price: parseFloat(formattedPrice).toFixed(2),
@@ -63,6 +65,8 @@ const createProduct = async () => {
     isSuccessful.value = true
     isFailed.value = false
     await resetForm();
+    const instance = toRaw(uploader.value);
+    await instance.reset()
   } else {
     isFailed.value = true
     isSuccessful.value = false
@@ -105,6 +109,7 @@ const getModelValue = async (file) => {
           <v-file-input
             accept="image/*"
             label="File input"
+            ref="uploader"
             @update:modelValue="getModelValue"
           ></v-file-input>
           <v-text-field
