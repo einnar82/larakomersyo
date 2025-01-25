@@ -34,22 +34,48 @@ Access the client app via https://larakomersyo-client.vercel.app/ and the admin 
 ### Start the development server
 
 **Instructions:**
-`composer install`
-`php artisan migrate --seed`
-`php artisan passport:install`
-`./vendor/bin/sail up`
+
+```
+composer install
+```
+
+```
+./vendor/bin/sail up
+```
+
+```
+./vendor/bin/sail artisan migrate --seed
+```
+
+```
+./vendor/bin/sail artisan passport:install
+```
 
 You can also use the `-d` option, to start the server in  
 the background if you do not care about the logs or still want to use your  
 terminal for other things.
 
 ### Build frontend assets
-`cd client/`
-`npm install && npm run dev`
-`cd admin/`
-`npm install && npm run dev`
+
+```
+cd client/
+```
+
+```
+npm install && npm run dev
+```
+
+```
+cd admin/
+```
+
+```
+npm install && npm run dev
+```
+
 
 ### Run Tests
 
 ```shell  
-./vendor/bin/sail test```
+./vendor/bin/sail test
+```

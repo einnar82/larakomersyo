@@ -16,7 +16,8 @@ export const useUploadStore = defineStore('upload', () => {
           'Content-Type': 'multipart/form-data'
         }
       }).post(`/upload`, data)
-      imageUrl.value = `${import.meta.env.VITE_IMAGE_BASE_URL}${response.data.path}`;
+      const baseURL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost/'
+      imageUrl.value = `${baseURL}${response.data.path}`;
 
       return response;
     } catch (err) {
